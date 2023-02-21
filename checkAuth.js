@@ -25,11 +25,17 @@ socket.on('open', async () => {
 
    sendMessage(1, "getUserLogin", null);
 
-   let clientInfo = {
+   let accessInfo = {
       "clientId": noEEGclientId,
       "clientSecret": noEEGclientSecret
    };
-   sendMessage(2, "requestAccess", clientInfo);
+   sendMessage(2, "requestAccess", accessInfo);
+
+   let authInfo = {
+      "clientId": noEEGclientId,
+      "clientSecret": noEEGclientSecret
+   };
+   sendMessage(3, "authorize", authInfo);
 
 });
 
