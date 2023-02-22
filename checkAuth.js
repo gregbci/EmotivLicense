@@ -50,7 +50,8 @@ socket.on('open', async () => {
 
    let authInfo = {
       "clientId": noEEGclientId,
-      "clientSecret": noEEGclientSecret
+      "clientSecret": noEEGclientSecret,
+      "debit": 10
    };
    let token = await sendMessage(3, "authorize", authInfo);
 
