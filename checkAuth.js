@@ -53,7 +53,11 @@ socket.on('open', async () => {
       "clientSecret": noEEGclientSecret
    };
    let token = await sendMessage(3, "authorize", authInfo);
-   console.log(token);
+
+   let licenseInfo = {
+      "cortexToken": token
+   };
+   await sendMessage(4, "getLicenseInfo", licenseInfo);
 
    endSession();
 });
