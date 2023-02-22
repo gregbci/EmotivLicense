@@ -13,30 +13,49 @@ process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;
 
 let socket = new WebSocket(url);
 
+
+// hacky way to add waiting for responses from server
+let promiseResolve;
+let promiseReject;
+
 function sendMessage(id, method, params) {
-   let msg = JSON.stringify({"id": id, "jsonrpc":"2.0", "method": method, "params": params});
-   socket.send(msg); 
+   return new Promise((resolve, reject) => {
+      promiseResolve = resolve;
+      promiseReject = reject;
+
+      console.log("sending " + method + " message");
+     
+      let msg = JSON.stringify({"id": id, "jsonrpc":"2.0", "method": method, "params": params});
+      socket.send(msg); 
+   });
 }
+
+function endSession() {
+   console.log("ending session");
+   socket.close();
+}
+
+
 
 
 socket.on('open', async () => {
 
-   console.log("sending request");
-
-   sendMessage(1, "getUserLogin", null);
+   await sendMessage(1, "getUserLogin", null);
 
    let accessInfo = {
       "clientId": noEEGclientId,
       "clientSecret": noEEGclientSecret
    };
-   sendMessage(2, "requestAccess", accessInfo);
+   await sendMessage(2, "requestAccess", accessInfo);
 
    let authInfo = {
       "clientId": noEEGclientId,
       "clientSecret": noEEGclientSecret
    };
-   sendMessage(3, "authorize", authInfo);
+   let token = await sendMessage(3, "authorize", authInfo);
+   console.log(token);
 
+   endSession();
 });
 
 
@@ -47,13 +66,22 @@ socket.on('message', (message) => {
    let data = JSON.parse(message);
    console.log(data);
 
+   if(data.result?.cortexToken) {
+      console.log("obtained token");
+      promiseResolve(data.result?.cortexToken);
+   }
+   else {
+      promiseResolve();
+   }
 });
+
 
 socket.on('close', () => {
 
    console.log("closing socket");
 
 });
+
 
 socket.on('error', console.error);
 
