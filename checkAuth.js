@@ -51,7 +51,7 @@ socket.on('open', async () => {
    let authInfo = {
       "clientId": noEEGclientId,
       "clientSecret": noEEGclientSecret,
-      "debit": 10
+      // "debit": 10      // GW - add this to increment localQuota
    };
    let token = await sendMessage(3, "authorize", authInfo);
 
