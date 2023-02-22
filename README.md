@@ -1,2 +1,4 @@
-Debug tool for Emotiv license issues
+Debug tool for Emotiv license issues.
+
+```node checkAuth.js```
 
